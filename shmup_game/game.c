@@ -3,8 +3,11 @@
 
 int main(void)
 {
-    const int screenWidth = 256;
-    const int screenHeight = 240;
+    const int screenWidth = 1024;
+    const int screenHeight = 960;
+
+    const int gameWidth = 256;
+    const int gameHeight = 240;
 
     const float shipTextureSize = 48;
     const float shipSpeed = 120.0f;
@@ -34,6 +37,9 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Ray shooter");
 
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+    RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);
+
     Image shipImage = LoadImage("assets/ship.png");
     Texture2D shipTexture = LoadTextureFromImage(shipImage);
 
@@ -50,7 +56,7 @@ int main(void)
 
     while (!WindowShouldClose())
     {
-        BeginDrawing();
+        BeginTextureMode(renderTexture);
             ClearBackground(BLACK);
 
             DrawTexture(backgroundTexture, 0, backgroundOffset, WHITE);
@@ -75,14 +81,14 @@ int main(void)
             // Don't allow the ship to go off the screen
             if (shipPosition.x < 0) {
               shipPosition.x = 0;
-            } else if (shipPosition.x > screenWidth - shipTextureSize) {
-              shipPosition.x = screenWidth - shipTextureSize;
+            } else if (shipPosition.x > gameWidth - shipTextureSize) {
+              shipPosition.x = gameWidth - shipTextureSize;
             }
 
             if (shipPosition.y < 0) {
               shipPosition.y = 0;
-            } else if (shipPosition.y > screenHeight - shipTextureSize) {
-              shipPosition.y = screenHeight - shipTextureSize;
+            } else if (shipPosition.y > gameHeight - shipTextureSize) {
+              shipPosition.y = gameHeight - shipTextureSize;
             }
 
             if (IsKeyPressed(KEY_SPACE)) {
@@ -117,7 +123,7 @@ int main(void)
               for (int i = 0; i < 100; i++) {
                 Vector2* enemy = &enemies[i];
                 if (enemy->x == -1 && enemy->y == -1) {
-                  enemy->x = GetRandomValue(0, screenWidth - enemyTextureSize);
+                  enemy->x = GetRandomValue(0, gameWidth - enemyTextureSize);
                   enemy->y = -enemyTextureSize;
                   break;
                 }
@@ -128,7 +134,7 @@ int main(void)
               Vector2* enemy = &enemies[i];
               if (enemy->x != -1 && enemy->y != -1) {
                 enemy->y += enemySpeed * GetFrameTime();
-                if (enemy->y > screenHeight) {
+                if (enemy->y > gameHeight) {
                   enemy->y = -1;
                   enemy->x = -1;
                 } else {
@@ -155,6 +161,17 @@ int main(void)
                 }
               }
             }
+        EndTextureMode();
+
+
+        BeginDrawing();
+          DrawTexturePro(
+              renderTexture.texture,
+              (Rectangle){ 0, 0, renderTexture.texture.width, -renderTexture.texture.height},
+              (Rectangle){ 0, 0, GetScreenWidth(), GetScreenHeight() },
+              (Vector2){ 0, 0 },
+              0,
+              WHITE);
         EndDrawing();
     }
 
