@@ -1,6 +1,65 @@
 #include "raylib.h"
 #include <stdio.h>
 
+typedef struct Simple2DAnimation {
+  Vector2 position;
+  Vector2 size;
+  float currentFrame;
+  float currentTime;
+  float frameTime;
+  int frames;
+  bool finished;
+  bool loop;
+  Rectangle rect;
+} Simple2DAnimation;
+
+Simple2DAnimation CreateSimple2DAnimation(
+  Vector2 position,
+  Vector2 size,
+  Vector2 textureSize,
+  float frameTime,
+  int frames,
+  bool loop)
+{
+  Simple2DAnimation animation = (Simple2DAnimation){
+    position,
+    size,
+    0,
+    0,
+    frameTime,
+    frames,
+    false,
+    loop,
+    (Rectangle){0, 0, textureSize.x / frames, textureSize.y},
+  };
+  return animation;
+}
+
+void UpdateSimple2DAnimation(Simple2DAnimation* animation)
+{
+  if (animation->finished) {
+    return;
+  }
+  animation->currentTime += GetFrameTime();
+  if (animation->currentTime >= animation->frameTime) {
+    animation->currentTime = 0;
+    animation->currentFrame++;
+    if (animation->currentFrame >= animation->frames) {
+      animation->currentFrame = 0;
+      if (!animation->loop) {
+        animation->finished = true;
+      }
+    }
+    animation->rect.x = animation->currentFrame * animation->size.x;
+  }
+}
+
+void DrawSimple2DAnimation(Simple2DAnimation animation, Texture2D texture)
+{
+  DrawTextureRec(texture, animation.rect, animation.position, WHITE);
+}
+
+
 int main(void)
 {
     const int screenWidth = 1024;
@@ -9,7 +68,19 @@ int main(void)
     const int gameWidth = 256;
     const int gameHeight = 240;
 
-    const float shipTextureSize = 48;
+    InitWindow(screenWidth, screenHeight, "Ray shooter");
+
+    Image shipImage = LoadImage("assets/ship.png");
+    Texture2D shipTexture = LoadTextureFromImage(shipImage);
+
+    Simple2DAnimation ship = CreateSimple2DAnimation(
+        (Vector2){100, 100},
+        (Vector2){48, 48},
+        (Vector2){192, 48},
+        0.2,
+        4,
+        true
+    );
     const float shipSpeed = 120.0f;
 
     const float backgroundSpeed = 40.0f;
@@ -33,15 +104,25 @@ int main(void)
       enemies[i] = (Vector2){ -1, -1 };
     }
 
-    float backgroundOffset = 0;
+    Image explosionImage = LoadImage("assets/purple_explosion.png");
+    Texture2D explosionTexture = LoadTextureFromImage(explosionImage);
 
-    InitWindow(screenWidth, screenHeight, "Ray shooter");
+    Simple2DAnimation explosions[100] = {};
+    for (int i = 0; i < 100; i++) {
+      explosions[i] = CreateSimple2DAnimation(
+          (Vector2){-1, -1},
+          (Vector2){32, 32},
+          (Vector2){192, 32},
+          0.06,
+          6,
+          false
+      );
+    }
+
+    float backgroundOffset = 0;
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);
-
-    Image shipImage = LoadImage("assets/ship.png");
-    Texture2D shipTexture = LoadTextureFromImage(shipImage);
 
     Image backgroundImage = LoadImage("assets/background.png");
     Texture2D backgroundTexture = LoadTextureFromImage(backgroundImage);
@@ -51,8 +132,6 @@ int main(void)
 
     Image enemyImage = LoadImage("assets/enemy.png");
     Texture2D enemyTexture = LoadTextureFromImage(enemyImage);
-
-    Vector2 shipPosition = { 100, 100 };
 
     while (!WindowShouldClose())
     {
@@ -67,42 +146,58 @@ int main(void)
             }
 
             if (IsKeyDown(KEY_A)) {
-              shipPosition.x -= shipSpeed * GetFrameTime();
+              ship.position.x -= shipSpeed * GetFrameTime();
             } else if (IsKeyDown(KEY_D)) {
-              shipPosition.x += shipSpeed * GetFrameTime();
+              ship.position.x += shipSpeed * GetFrameTime();
             }
 
             if (IsKeyDown(KEY_W)) {
-              shipPosition.y -= shipSpeed * GetFrameTime();
+              ship.position.y -= shipSpeed * GetFrameTime();
             } else if (IsKeyDown(KEY_S)) {
-              shipPosition.y += shipSpeed * GetFrameTime();
+              ship.position.y += shipSpeed * GetFrameTime();
             }
 
             // Don't allow the ship to go off the screen
-            if (shipPosition.x < 0) {
-              shipPosition.x = 0;
-            } else if (shipPosition.x > gameWidth - shipTextureSize) {
-              shipPosition.x = gameWidth - shipTextureSize;
+            if (ship.position.x < 0) {
+              ship.position.x = 0;
+            } else if (ship.position.x > gameWidth - ship.size.x) {
+              ship.position.x = gameWidth - ship.size.x;
             }
 
-            if (shipPosition.y < 0) {
-              shipPosition.y = 0;
-            } else if (shipPosition.y > gameHeight - shipTextureSize) {
-              shipPosition.y = gameHeight - shipTextureSize;
+            if (ship.position.y < 0) {
+              ship.position.y = 0;
+            } else if (ship.position.y > gameHeight - ship.size.y) {
+              ship.position.y = gameHeight - ship.size.y;
             }
 
             if (IsKeyPressed(KEY_SPACE)) {
               for (int i = 0; i < 100; i++) {
                 Vector2* shot = &shots[i];
                 if (shot->x == -1 && shot->y == -1) {
-                  shot->x = shipPosition.x + shipTextureSize / 2 - shotTextureSize / 2;
-                  shot->y = shipPosition.y - shotTextureSize;
+                  shot->x = ship.position.x + ship.size.x / 2 - shotTextureSize / 2;
+                  shot->y = ship.position.y - shotTextureSize;
                   break;
                 }
               }
             }
 
-            DrawTexture(shipTexture, shipPosition.x, shipPosition.y, WHITE);
+            UpdateSimple2DAnimation(&ship);
+            DrawSimple2DAnimation(ship, shipTexture);
+
+            // Handle explosions
+            for (int i = 0; i < 100; i++) {
+              Simple2DAnimation* explosion = &explosions[i];
+              if (explosion->position.x != -1 && explosion->position.y != -1) {
+                UpdateSimple2DAnimation(explosion);
+                DrawSimple2DAnimation(*explosion, explosionTexture);
+
+                if (explosion->finished) {
+                  explosion->position.x = -1;
+                  explosion->position.y = -1;
+                  explosion->finished = false;
+                }
+              }
+            }
 
             for (int i = 0; i < 100; i++) {
               Vector2* shot = &shots[i];
@@ -145,6 +240,15 @@ int main(void)
                     if (shot->x != -1 && shot->y != -1) {
                       Rectangle shotRect = (Rectangle){shot->x, shot->y, shotTextureSize, shotTextureSize};
                       if (CheckCollisionRecs(enemyRect, shotRect)) {
+
+                        for (int j = 0; j < 100; j++) {
+                          Simple2DAnimation* explosion = &explosions[j];
+                          if (explosion->position.x == -1 && explosion->position.y == -1) {
+                            explosion->position.x = enemy->x + enemyTextureSize / 2 - explosion->size.x / 2;
+                            explosion->position.y = enemy->y + enemyTextureSize / 2 - explosion->size.y / 2;
+                            break;
+                          }
+                        }
                         enemy->x = -1;
                         enemy->y = -1;
                         shot->x = -1;
@@ -157,10 +261,10 @@ int main(void)
                   }
                   if (!hit) {
                     DrawTexture(enemyTexture, enemy->x, enemy->y, WHITE);
-                  }
                 }
               }
             }
+        }
         EndTextureMode();
 
 
