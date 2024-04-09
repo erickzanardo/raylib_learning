@@ -1,16 +1,4 @@
-#include "raylib.h"
-
-typedef struct Simple2DAnimation {
-  Vector2 position;
-  Vector2 size;
-  float currentFrame;
-  float currentTime;
-  float frameTime;
-  int frames;
-  bool finished;
-  bool loop;
-  Rectangle rect;
-} Simple2DAnimation;
+#include "simple_2d_animation.h"
 
 Simple2DAnimation CreateSimple2DAnimation(
   Vector2 position,

@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "engine/simple_2d_animation.c"
+#include "engine/simple_2d_animation.h"
 #include "background.c"
 #include "explosions.c"
 #include <stdio.h>
