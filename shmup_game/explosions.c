@@ -4,11 +4,12 @@
 
 Simple2DAnimation explosions[100] = {};
 
-Texture2D LoadExplosionTexture()
+Texture2D explosionTexture;
+
+void LoadExplosionTexture()
 {
   Image explosionImage = LoadImage("assets/purple_explosion.png");
-  Texture2D explosionTexture = LoadTextureFromImage(explosionImage);
-  return explosionTexture;
+  explosionTexture = LoadTextureFromImage(explosionImage);
 }
 
 void InitializeExplosions()
@@ -25,8 +26,14 @@ void InitializeExplosions()
   }
 }
 
+void ResetExplosion(Simple2DAnimation* explosion)
+{
+  explosion->position.x = -1;
+  explosion->position.y = -1;
+  explosion->finished = false;
+}
 
-void UpdateExplosions(Texture2D explosionTexture)
+void UpdateExplosions()
 {
   // Handle explosions
   for (int i = 0; i < 100; i++) {
@@ -36,9 +43,7 @@ void UpdateExplosions(Texture2D explosionTexture)
       DrawSimple2DAnimation(*explosion, explosionTexture);
 
       if (explosion->finished) {
-        explosion->position.x = -1;
-        explosion->position.y = -1;
-        explosion->finished = false;
+        ResetExplosion(explosion);
       }
     }
   }

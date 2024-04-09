@@ -28,18 +28,14 @@ int main(void)
     InitializeEnemies();
     InitializeExplosions();
     InitializeShots();
-    Texture2D explosionTexture = LoadExplosionTexture();
+
+    LoadBackgroundTexture();
+    LoadExplosionTexture();
+    LoadShotTexture();
+    LoadEnemyTexture();
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);
-
-    Texture2D backgroundTexture = LoadBackgroundTexture();
-
-    Image shotImage = LoadImage("assets/shot.png");
-    Texture2D shotTexture = LoadTextureFromImage(shotImage);
-
-    Image enemyImage = LoadImage("assets/enemy.png");
-    Texture2D enemyTexture = LoadTextureFromImage(enemyImage);
 
     while (!WindowShouldClose())
     {
@@ -47,20 +43,18 @@ int main(void)
             ClearBackground(BLACK);
 
             UpdateBackground(gameHeight);
-            DrawBackground(backgroundTexture);
-
+            DrawBackground();
 
             ControlPlayer(&ship);
             UpdateSimple2DAnimation(&ship);
             DrawSimple2DAnimation(ship, shipTexture);
 
-            UpdateShots(shotTexture);
+            UpdateShots();
 
-            // Handle explosions
-            UpdateExplosions(explosionTexture);
+            UpdateExplosions();
 
 
-            UpdateEnemies(enemyTexture);
+            UpdateEnemies();
         EndTextureMode();
 
 

@@ -2,10 +2,11 @@
 float backgroundOffset = 0;
 const float backgroundSpeed = 40.0f;
 
-Texture2D LoadBackgroundTexture() {
+Texture2D backgroundTexture;
+
+void LoadBackgroundTexture() {
     Image backgroundImage = LoadImage("assets/background.png");
-    Texture2D backgroundTexture = LoadTextureFromImage(backgroundImage);
-    return backgroundTexture;
+    backgroundTexture = LoadTextureFromImage(backgroundImage);
 }
 
 void UpdateBackground(float gameHeight)
@@ -16,7 +17,7 @@ void UpdateBackground(float gameHeight)
     }
 }
 
-void DrawBackground(Texture2D backgroundTexture)
+void DrawBackground()
 {
     DrawTexture(backgroundTexture, 0, backgroundOffset, WHITE);
     DrawTexture(backgroundTexture, 0, backgroundOffset - backgroundTexture.height, WHITE);

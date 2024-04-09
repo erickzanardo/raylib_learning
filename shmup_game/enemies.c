@@ -11,6 +11,13 @@ const float enemyTextureSize = 16;
 
 Vector2 enemies[100] = {};
 float enemySpawnTimer = 0;
+Texture2D enemyTexture;
+
+void LoadEnemyTexture()
+{
+  Image enemyImage = LoadImage("assets/enemy.png");
+  enemyTexture = LoadTextureFromImage(enemyImage);
+}
 
 void InitializeEnemies()
 {
@@ -19,7 +26,13 @@ void InitializeEnemies()
   }
 }
 
-void UpdateEnemies(Texture2D enemyTexture)
+void ResetEnemy(Vector2* enemy)
+{
+  enemy->x = -1;
+  enemy->y = -1;
+}
+
+void UpdateEnemies()
 {
   enemySpawnTimer += GetFrameTime();
   if (enemySpawnTimer > 1) {
@@ -38,8 +51,7 @@ void UpdateEnemies(Texture2D enemyTexture)
     if (enemy->x != -1 && enemy->y != -1) {
       enemy->y += enemySpeed * GetFrameTime();
       if (enemy->y > gameHeight) {
-        enemy->y = -1;
-        enemy->x = -1;
+        ResetEnemy(enemy);
       } else {
         Rectangle enemyRect = (Rectangle){enemy->x, enemy->y, enemyTextureSize, enemyTextureSize};
         bool hit = false;
@@ -54,10 +66,8 @@ void UpdateEnemies(Texture2D enemyTexture)
                 (Vector2){enemyTextureSize, enemyTextureSize}
               );
 
-              enemy->x = -1;
-              enemy->y = -1;
-              shot->x = -1;
-              shot->y = -1;
+              ResetEnemy(enemy);
+              ResetShot(shot);
 
               hit = true;
               break;
