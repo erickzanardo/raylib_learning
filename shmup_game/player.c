@@ -1,8 +1,30 @@
+#ifndef PLAYER
+#define PLAYER
 #include "engine/simple_2d_animation.h"
 #include "consts.h"
 #include "shots.c"
 
+Simple2DAnimation ship;
+Texture2D shipTexture;
+
+void LoadPlayer()
+{
+  Image shipImage = LoadImage("assets/ship.png");
+  shipTexture = LoadTextureFromImage(shipImage);
+}
+
 const float shipSpeed = 120.0f;
+void InitPlayer()
+{
+  ship = CreateSimple2DAnimation(
+      (Vector2){100, 100},
+      (Vector2){48, 48},
+      (Vector2){192, 48},
+      0.2,
+      4,
+      true
+  );
+}
 
 void ControlPlayer(Simple2DAnimation* ship) {
   if (IsKeyDown(KEY_A)) {
@@ -34,3 +56,4 @@ void ControlPlayer(Simple2DAnimation* ship) {
     SetShotAt(ship->position, ship->size);
   }
 }
+#endif

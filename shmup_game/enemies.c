@@ -1,6 +1,7 @@
 #ifndef ENEMIES
 #define ENEMIES
 #include "consts.h"
+#include "engine/simple_2d_animation.h"
 #include "raylib.h"
 #include "explosions.c"
 #include "shots.c"
@@ -56,9 +57,14 @@ void UpdateEnemies()
         Rectangle enemyRect = (Rectangle){enemy->x, enemy->y, enemyTextureSize, enemyTextureSize};
         bool hit = false;
         for (int j = 0; j < 100; j++) {
-          Vector2* shot = &shots[j];
-          if (shot->x != -1 && shot->y != -1) {
-            Rectangle shotRect = (Rectangle){shot->x, shot->y, shotTextureSize, shotTextureSize};
+          Simple2DAnimation* shot = &shots[j];
+          if (shot->position.x != -1 && shot->position.y != -1) {
+            Rectangle shotRect = (Rectangle){
+              shot->position.x,
+              shot->position.y,
+              shot->size.x,
+              shot->size.y
+            };
             if (CheckCollisionRecs(enemyRect, shotRect)) {
 
               SetExplosionAt(

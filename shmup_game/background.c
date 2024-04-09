@@ -1,3 +1,6 @@
+#ifndef BACKGROUND
+#define BACKGROUND
+#include "consts.h"
 #include "raylib.h"
 float backgroundOffset = 0;
 const float backgroundSpeed = 40.0f;
@@ -9,7 +12,7 @@ void LoadBackgroundTexture() {
     backgroundTexture = LoadTextureFromImage(backgroundImage);
 }
 
-void UpdateBackground(float gameHeight)
+void UpdateBackground()
 {
     backgroundOffset += backgroundSpeed * GetFrameTime();
     if (backgroundOffset >= gameHeight) {
@@ -23,3 +26,4 @@ void DrawBackground()
     DrawTexture(backgroundTexture, 0, backgroundOffset - backgroundTexture.height, WHITE);
 }
 
+#endif

@@ -6,29 +6,37 @@
 #include "shots.c"
 #include "enemies.c"
 #include "consts.h"
+#include "game_state.c"
+#include "title.c"
 #include <stdio.h>
+
+void RenderGame()
+{
+  UpdateBackground();
+  DrawBackground();
+
+  ControlPlayer(&ship);
+  UpdateSimple2DAnimation(&ship);
+  DrawSimple2DAnimation(ship, shipTexture);
+
+  UpdateShots();
+
+  UpdateExplosions();
+
+
+  UpdateEnemies();
+}
 
 int main(void)
 {
-
     InitWindow(screenWidth, screenHeight, "Ray shooter");
-
-    Image shipImage = LoadImage("assets/ship.png");
-    Texture2D shipTexture = LoadTextureFromImage(shipImage);
-
-    Simple2DAnimation ship = CreateSimple2DAnimation(
-        (Vector2){100, 100},
-        (Vector2){48, 48},
-        (Vector2){192, 48},
-        0.2,
-        4,
-        true
-    );
 
     InitializeEnemies();
     InitializeExplosions();
     InitializeShots();
 
+    LoadPlayer();
+    LoadTitle();
     LoadBackgroundTexture();
     LoadExplosionTexture();
     LoadShotTexture();
@@ -41,20 +49,14 @@ int main(void)
     {
         BeginTextureMode(renderTexture);
             ClearBackground(BLACK);
-
-            UpdateBackground(gameHeight);
-            DrawBackground();
-
-            ControlPlayer(&ship);
-            UpdateSimple2DAnimation(&ship);
-            DrawSimple2DAnimation(ship, shipTexture);
-
-            UpdateShots();
-
-            UpdateExplosions();
-
-
-            UpdateEnemies();
+            if (game_state == GAME)
+            {
+              RenderGame();
+            }
+            else
+            {
+              RunTitle();
+            }
         EndTextureMode();
 
 
