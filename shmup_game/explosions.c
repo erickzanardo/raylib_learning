@@ -1,3 +1,5 @@
+#ifndef EXPLOSIONS
+#define EXPLOSIONS
 #include "engine/simple_2d_animation.c"
 
 Simple2DAnimation explosions[100] = {};
@@ -53,3 +55,4 @@ void SetExplosionAt(Vector2 position, Vector2 targetSize)
      }
    }
 }
+#endif

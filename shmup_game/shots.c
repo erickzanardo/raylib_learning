@@ -28,4 +28,15 @@ void UpdateShots(Texture2D shotTexture) {
     }
   }
 }
+
+void SetShotAt(Vector2 position, Vector2 targetSize) {
+  for (int i = 0; i < 100; i++) {
+    Vector2* shot = &shots[i];
+    if (shot->x == -1 && shot->y == -1) {
+      shot->x = position.x + targetSize.x / 2 - shotTextureSize / 2;
+      shot->y = position.y - shotTextureSize;
+      break;
+    }
+  }
+}
 #endif

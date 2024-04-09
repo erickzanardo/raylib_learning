@@ -31,13 +31,6 @@ void ControlPlayer(Simple2DAnimation* ship) {
   }
 
   if (IsKeyPressed(KEY_SPACE)) {
-    for (int i = 0; i < 100; i++) {
-      Vector2* shot = &shots[i];
-      if (shot->x == -1 && shot->y == -1) {
-        shot->x = ship->position.x + ship->size.x / 2 - shotTextureSize / 2;
-        shot->y = ship->position.y - shotTextureSize;
-        break;
-      }
-    }
+    SetShotAt(ship->position, ship->size);
   }
 }
