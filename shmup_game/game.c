@@ -1,64 +1,8 @@
 #include "raylib.h"
+#include "engine/simple_2d_animation.c"
+#include "background.c"
+#include "explosions.c"
 #include <stdio.h>
-
-typedef struct Simple2DAnimation {
-  Vector2 position;
-  Vector2 size;
-  float currentFrame;
-  float currentTime;
-  float frameTime;
-  int frames;
-  bool finished;
-  bool loop;
-  Rectangle rect;
-} Simple2DAnimation;
-
-Simple2DAnimation CreateSimple2DAnimation(
-  Vector2 position,
-  Vector2 size,
-  Vector2 textureSize,
-  float frameTime,
-  int frames,
-  bool loop)
-{
-  Simple2DAnimation animation = (Simple2DAnimation){
-    position,
-    size,
-    0,
-    0,
-    frameTime,
-    frames,
-    false,
-    loop,
-    (Rectangle){0, 0, textureSize.x / frames, textureSize.y},
-  };
-  return animation;
-}
-
-void UpdateSimple2DAnimation(Simple2DAnimation* animation)
-{
-  if (animation->finished) {
-    return;
-  }
-  animation->currentTime += GetFrameTime();
-  if (animation->currentTime >= animation->frameTime) {
-    animation->currentTime = 0;
-    animation->currentFrame++;
-    if (animation->currentFrame >= animation->frames) {
-      animation->currentFrame = 0;
-      if (!animation->loop) {
-        animation->finished = true;
-      }
-    }
-    animation->rect.x = animation->currentFrame * animation->size.x;
-  }
-}
-
-void DrawSimple2DAnimation(Simple2DAnimation animation, Texture2D texture)
-{
-  DrawTextureRec(texture, animation.rect, animation.position, WHITE);
-}
-
 
 int main(void)
 {
@@ -83,9 +27,6 @@ int main(void)
     );
     const float shipSpeed = 120.0f;
 
-    const float backgroundSpeed = 40.0f;
-    const float backgroundHeight = 240;
-
     const float shotSpeed = 200.0f;
     const float shotTextureSize = 16;
 
@@ -104,8 +45,7 @@ int main(void)
       enemies[i] = (Vector2){ -1, -1 };
     }
 
-    Image explosionImage = LoadImage("assets/purple_explosion.png");
-    Texture2D explosionTexture = LoadTextureFromImage(explosionImage);
+    Texture2D explosionTexture = LoadExplosionTexture();
 
     Simple2DAnimation explosions[100] = {};
     for (int i = 0; i < 100; i++) {
@@ -119,13 +59,10 @@ int main(void)
       );
     }
 
-    float backgroundOffset = 0;
-
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);
 
-    Image backgroundImage = LoadImage("assets/background.png");
-    Texture2D backgroundTexture = LoadTextureFromImage(backgroundImage);
+    Texture2D backgroundTexture = LoadBackgroundTexture();
 
     Image shotImage = LoadImage("assets/shot.png");
     Texture2D shotTexture = LoadTextureFromImage(shotImage);
@@ -138,12 +75,8 @@ int main(void)
         BeginTextureMode(renderTexture);
             ClearBackground(BLACK);
 
-            DrawTexture(backgroundTexture, 0, backgroundOffset, WHITE);
-            DrawTexture(backgroundTexture, 0, backgroundOffset - backgroundHeight, WHITE);
-            backgroundOffset += backgroundSpeed * GetFrameTime();
-            if (backgroundOffset >= backgroundHeight) {
-              backgroundOffset = 0;
-            }
+            UpdateBackground(gameHeight);
+            DrawBackground(backgroundTexture);
 
             if (IsKeyDown(KEY_A)) {
               ship.position.x -= shipSpeed * GetFrameTime();
