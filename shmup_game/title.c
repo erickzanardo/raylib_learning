@@ -5,6 +5,7 @@
 #include "background.c"
 #include "game_state.c"
 #include "player.c"
+#include "game_text.c"
 #include "consts.h"
 
 Texture2D bannerTexture;
@@ -24,6 +25,26 @@ void RunTitle()
   UpdateBackground();
   DrawBackground();
   DrawTexture(bannerTexture, bannerPosition.x, bannerPosition.y, WHITE);
+  DrawGameTextHorizontalCentered(
+    "Press Enter",
+    10,
+    140,
+    WHITE
+  );
+  DrawGameTextHorizontalCentered(
+    "to start",
+    10,
+    152,
+    WHITE
+  );
+
+  DrawGameTextHorizontalCentered(
+    "CherryBit Studios",
+    8,
+    gameHeight - 10,
+    LIGHTGRAY 
+  );
+
   if (IsKeyPressed(KEY_ENTER))
   {
     InitPlayer();

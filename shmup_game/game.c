@@ -8,6 +8,7 @@
 #include "consts.h"
 #include "game_state.c"
 #include "title.c"
+#include "game_text.c"
 #include <stdio.h>
 
 void RenderGame()
@@ -29,12 +30,13 @@ void RenderGame()
 
 int main(void)
 {
-    InitWindow(screenWidth, screenHeight, "Ray shooter");
+    InitWindow(screenWidth, screenHeight, "Little Starships");
 
     InitializeEnemies();
     InitializeExplosions();
     InitializeShots();
 
+    LoadGameFont();
     LoadPlayer();
     LoadTitle();
     LoadBackgroundTexture();
