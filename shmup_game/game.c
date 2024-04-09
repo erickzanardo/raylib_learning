@@ -3,6 +3,7 @@
 #include "background.c"
 #include "explosions.c"
 #include "player.c"
+#include "shots.c"
 #include "consts.h"
 #include <stdio.h>
 
@@ -23,18 +24,10 @@ int main(void)
         true
     );
 
-    const float shotSpeed = 200.0f;
-    const float shotTextureSize = 16;
-
     const float enemySpeed = 40.0f;
     const float enemyTextureSize = 16;
 
     float enemySpawnTimer = 0;
-
-    Vector2 shots[100] = {};
-    for (int i = 0; i < 100; i++) {
-      shots[i] = (Vector2){ -1, -1 };
-    }
 
     Vector2 enemies[100] = {};
     for (int i = 0; i < 100; i++) {
@@ -42,6 +35,7 @@ int main(void)
     }
 
     InitializeExplosions();
+    InitializeShots();
     Texture2D explosionTexture = LoadExplosionTexture();
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -68,21 +62,11 @@ int main(void)
             UpdateSimple2DAnimation(&ship);
             DrawSimple2DAnimation(ship, shipTexture);
 
+            UpdateShots(shotTexture);
+
             // Handle explosions
             UpdateExplosions(explosionTexture);
 
-            for (int i = 0; i < 100; i++) {
-              Vector2* shot = &shots[i];
-              if (shot->x != -1 && shot->y != -1) {
-                shot->y -= shotSpeed * GetFrameTime();
-                if (shot->y + shotTextureSize < 0) {
-                  shot->y = -1;
-                  shot->x = -1;
-                } else {
-                  DrawTexture(shotTexture, shot->x, shot->y, WHITE);
-                }
-              }
-            }
 
             enemySpawnTimer += GetFrameTime();
             if (enemySpawnTimer > 1) {
