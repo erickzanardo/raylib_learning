@@ -11,7 +11,7 @@ void LoadGameFont()
 {
   screenCenter = (Vector2){gameWidth / 2.f, gameHeight / 2.f};
   gameFont = LoadFont(
-    "assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf"
+    "assets/pixellife/PIXEL-LI.TTF"
   );
 }
 

@@ -39,7 +39,6 @@ int main(void)
     LoadGameFont();
     LoadTitle();
     LoadBackgroundTexture();
-    LoadExplosionTexture();
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);

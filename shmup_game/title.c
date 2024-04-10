@@ -27,20 +27,20 @@ void RunTitle()
   DrawTexture(bannerTexture, bannerPosition.x, bannerPosition.y, WHITE);
   DrawGameTextHorizontalCentered(
     "Press Enter",
-    10,
+    14,
     140,
     WHITE
   );
   DrawGameTextHorizontalCentered(
     "to start",
-    10,
+    14,
     152,
     WHITE
   );
 
   DrawGameTextHorizontalCentered(
     "CherryBit Studios",
-    8,
+    12,
     gameHeight - 10,
     LIGHTGRAY 
   );

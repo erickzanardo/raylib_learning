@@ -32,7 +32,6 @@ void InitPlayer()
     (Vector2){0, 0},
     (Vector2){0, 24},
     (Vector2){8, 8},
-    (Vector2){24, 8},
     0.1,
     4,
     true
