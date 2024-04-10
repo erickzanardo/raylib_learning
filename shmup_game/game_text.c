@@ -2,71 +2,59 @@
 #define GAME_TEXT
 
 #include "consts.h"
+#include "game_sprite.c"
 #include "raylib.h"
 
-Font gameFont;
 Vector2 screenCenter;
+
+int getStringSize (char* s) {
+    char* t; // first copy the pointer to not change the original
+    int size = 0;
+
+    for (t = s; *t != '\0'; t++) {
+        size++;
+    }
+
+    return size;
+}
 
 void LoadGameFont()
 {
   screenCenter = (Vector2){gameWidth / 2.f, gameHeight / 2.f};
-  gameFont = LoadFont(
-    "assets/pixellife/PIXEL-LI.TTF"
-  );
 }
 
 void DrawGameText(
-  const char* text,
+  char* text,
   Vector2 position,
-  int fontSize, Color color
+  bool light
 )
 {
-  Vector2 size = MeasureTextEx(gameFont, text, fontSize, 1);
-  DrawTextEx(gameFont, text, position, fontSize, 1, color);
-}
+  int stringSize = getStringSize(text);
+  int width = stringSize * 8;
 
-void DrawGameTextCentered(
-  const char* text,
-  int fontSize,
-  Color color
-)
-{
-  Vector2 size = MeasureTextEx(gameFont, text, fontSize, 1);
-  Vector2 position = {
-    (screenCenter.x - size.x) / 2,
-    (screenCenter.y - size.y) / 2
-  };
-  DrawTextEx(gameFont, text, position, fontSize, 1, color);
-}
+  // Dark start at 64
+  // Light start at 80
 
-void DrawGameTextHorizontalCentered(
-  const char* text,
-  int fontSize,
-  int y,
-  Color color
-)
-{
-  Vector2 size = MeasureTextEx(gameFont, text, fontSize, 1);
-  Vector2 position = {
-    screenCenter.x - size.x / 2,
-    y
-  };
-  DrawTextEx(gameFont, text, position, fontSize, 1, color);
-}
+  Vector2 size = (Vector2){width, 8};
+  Rectangle rect[stringSize];
+  for (int i = 0; i < stringSize; i++) {
+    int y = light ? 80 : 64;
+    int letterIndex = text[i] - 65;
 
-void DrawGameTextVerticalCentered(
-  const char* text,
-  int fontSize,
-  int x,
-  Color color
-)
-{
-  Vector2 size = MeasureTextEx(gameFont, text, fontSize, 1);
-  Vector2 position = {
-    x,
-    (screenCenter.y - size.y) / 2
-  };
-  DrawTextEx(gameFont, text, position, fontSize, 1, color);
-}
+    if (letterIndex > 13) {
+      letterIndex -= 13;
+      y += 8;
+    }
+    rect[i] = (Rectangle){letterIndex * 8, y, 8, 8};
+  }
 
+  for (int i = 0; i < stringSize; i++) {
+    DrawTextureRec(
+      sprites,
+      rect[i],
+      (Vector2){position.x + i * 8, position.y},
+      WHITE
+    );
+  }
+}
 #endif

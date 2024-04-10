@@ -25,24 +25,10 @@ void RunTitle()
   UpdateBackground();
   DrawBackground();
   DrawTexture(bannerTexture, bannerPosition.x, bannerPosition.y, WHITE);
-  DrawGameTextHorizontalCentered(
-    "Press Enter",
-    14,
-    140,
-    WHITE
-  );
-  DrawGameTextHorizontalCentered(
-    "to start",
-    14,
-    152,
-    WHITE
-  );
-
-  DrawGameTextHorizontalCentered(
-    "CherryBit Studios",
-    12,
-    gameHeight - 10,
-    LIGHTGRAY 
+  DrawGameText(
+    "ABCXYZ",
+    (Vector2){gameWidth / 2.f - 24, gameHeight / 2.f + 20},
+    true
   );
 
   if (IsKeyPressed(KEY_ENTER))
