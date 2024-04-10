@@ -7,4 +7,6 @@ enum GameState
 };
 
 enum GameState game_state = TITLE;
+
+int shipModel = 0;
 #endif

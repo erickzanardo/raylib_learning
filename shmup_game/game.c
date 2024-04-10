@@ -9,6 +9,7 @@
 #include "game_state.c"
 #include "title.c"
 #include "game_text.c"
+#include "game_sprite.c"
 #include <stdio.h>
 
 void RenderGame()
@@ -16,14 +17,12 @@ void RenderGame()
   UpdateBackground();
   DrawBackground();
 
-  ControlPlayer(&ship);
-  UpdateSimple2DAnimation(&ship);
-  DrawSimple2DAnimation(ship, shipTexture);
+  ControlPlayer();
+  RenderPlayer();
 
   UpdateShots();
 
   UpdateExplosions();
-
 
   UpdateEnemies();
 }
@@ -36,13 +35,11 @@ int main(void)
     InitializeExplosions();
     InitializeShots();
 
+    LoadGameSprite();
     LoadGameFont();
-    LoadPlayer();
     LoadTitle();
     LoadBackgroundTexture();
     LoadExplosionTexture();
-    LoadShotTexture();
-    LoadEnemyTexture();
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     RenderTexture2D renderTexture = LoadRenderTexture(gameWidth, gameHeight);

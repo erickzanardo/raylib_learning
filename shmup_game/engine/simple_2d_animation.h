@@ -17,6 +17,7 @@ typedef struct Simple2DAnimation {
 
 Simple2DAnimation CreateSimple2DAnimation(
   Vector2 position,
+  Vector2 source,
   Vector2 size,
   Vector2 textureSize,
   float frameTime,

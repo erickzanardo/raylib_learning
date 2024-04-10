@@ -3,57 +3,81 @@
 #include "engine/simple_2d_animation.h"
 #include "consts.h"
 #include "shots.c"
+#include "game_state.c"
+#include "game_sprite.c"
 
-Simple2DAnimation ship;
-Texture2D shipTexture;
-
-void LoadPlayer()
-{
-  Image shipImage = LoadImage("assets/ship.png");
-  shipTexture = LoadTextureFromImage(shipImage);
-}
+Vector2 shipPosition = {100, 100};
+Vector2 shipSize = {8, 8};
+Rectangle shipRect;
+Simple2DAnimation thrusterAnimation;
 
 const float shipSpeed = 120.0f;
 void InitPlayer()
 {
-  ship = CreateSimple2DAnimation(
-      (Vector2){100, 100},
-      (Vector2){48, 48},
-      (Vector2){192, 48},
-      0.2,
-      4,
-      true
+  shipPosition = (Vector2){
+    gameWidth / 2.f - shipSize.x / 2,
+    gameHeight - 32
+  };
+
+  if (shipModel == 0)
+  {
+    shipRect = (Rectangle){0, 16, 8, 8};
+  }
+  else
+  {
+    shipRect = (Rectangle){8, 16, 8, 8};
+  }
+
+  thrusterAnimation = CreateSimple2DAnimation(
+    (Vector2){0, 0},
+    (Vector2){0, 24},
+    (Vector2){8, 8},
+    (Vector2){24, 8},
+    0.1,
+    4,
+    true
   );
 }
 
-void ControlPlayer(Simple2DAnimation* ship) {
+void RenderPlayer()
+{
+  DrawTextureRec(sprites, shipRect, shipPosition, WHITE);
+  DrawSimple2DAnimation(thrusterAnimation, sprites);
+}
+
+void ControlPlayer() {
   if (IsKeyDown(KEY_A)) {
-    ship->position.x -= shipSpeed * GetFrameTime();
+    shipPosition.x -= shipSpeed * GetFrameTime();
   } else if (IsKeyDown(KEY_D)) {
-    ship->position.x += shipSpeed * GetFrameTime();
+    shipPosition.x += shipSpeed * GetFrameTime();
   }
 
   if (IsKeyDown(KEY_W)) {
-    ship->position.y -= shipSpeed * GetFrameTime();
+    shipPosition.y -= shipSpeed * GetFrameTime();
   } else if (IsKeyDown(KEY_S)) {
-    ship->position.y += shipSpeed * GetFrameTime();
+    shipPosition.y += shipSpeed * GetFrameTime();
   }
 
   // Don't allow the ship to go off the screen
-  if (ship->position.x < 0) {
-    ship->position.x = 0;
-  } else if (ship->position.x > gameWidth - ship->size.x) {
-    ship->position.x = gameWidth - ship->size.x;
+  if (shipPosition.x < 0) {
+    shipPosition.x = 0;
+  } else if (shipPosition.x > gameWidth - shipSize.x) {
+    shipPosition.x = gameWidth - shipSize.x;
   }
 
-  if (ship->position.y < 0) {
-    ship->position.y = 0;
-  } else if (ship->position.y > gameHeight - ship->size.y) {
-    ship->position.y = gameHeight - ship->size.y;
+  if (shipPosition.y < 0) {
+    shipPosition.y = 0;
+  } else if (shipPosition.y > gameHeight - shipSize.y) {
+    shipPosition.y = gameHeight - shipSize.y;
   }
+
+  UpdateSimple2DAnimation(&thrusterAnimation);
+
+  thrusterAnimation.position.x = shipPosition.x + shipSize.x / 2 - thrusterAnimation.size.x / 2;
+  thrusterAnimation.position.y = shipPosition.y + shipSize.y;
 
   if (IsKeyPressed(KEY_SPACE)) {
-    SetShotAt(ship->position, ship->size);
+    SetShotAt(shipPosition, shipSize, PLAYER_SHOT);
   }
 }
 #endif

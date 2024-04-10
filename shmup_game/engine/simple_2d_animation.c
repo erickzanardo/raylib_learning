@@ -2,6 +2,7 @@
 
 Simple2DAnimation CreateSimple2DAnimation(
   Vector2 position,
+  Vector2 source,
   Vector2 size,
   Vector2 textureSize,
   float frameTime,
@@ -17,7 +18,7 @@ Simple2DAnimation CreateSimple2DAnimation(
     frames,
     false,
     loop,
-    (Rectangle){0, 0, textureSize.x / frames, textureSize.y},
+    (Rectangle){source.x, source.y, textureSize.x / frames, textureSize.y},
   };
   return animation;
 }

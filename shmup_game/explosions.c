@@ -17,6 +17,7 @@ void InitializeExplosions()
   for (int i = 0; i < 100; i++) {
     explosions[i] = CreateSimple2DAnimation(
         (Vector2){-1, -1},
+        (Vector2){0, 0},
         (Vector2){32, 32},
         (Vector2){192, 32},
         0.06,
